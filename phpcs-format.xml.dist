@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<ruleset name="wordpress-formatting">
+    <description>WordPress formatting, minus the rules that fight this codebase.</description>
+
+    <rule ref="WordPress-Core">
+        <!-- PHP 8.2 is the floor. WPCS forbids short arrays for PHP 5.3
+             compatibility that stopped mattering years ago, and rewriting some
+             200 of them buys nothing. -->
+        <exclude name="Universal.Arrays.DisallowShortArraySyntax"/>
+        <exclude name="WordPress.PHP.YodaConditions"/>
+
+        <!-- Would split every multi-argument call across separate lines: 242
+             call sites in one package, longer and no clearer. -->
+        <exclude name="PEAR.Functions.FunctionCallSignature"/>
+
+        <!-- Short ternaries are used deliberately and read fine. -->
+        <exclude name="Universal.Operators.DisallowShortTernary"/>
+
+        <!-- Assignment alignment is already consistent; the sniff disagrees
+             with itself across multi-line calls. -->
+        <exclude name="Generic.Formatting.MultipleStatementAlignment"/>
+        <exclude name="WordPress.Arrays.MultipleStatementAlignment"/>
+
+        <!-- WordPress names files class-foo.php; PSR-4 autoloading requires
+             Foo.php. These are Composer libraries, so PSR-4 wins. A mismatch
+             there is silently unloadable, and CI checks it separately. -->
+        <exclude name="WordPress.Files.FileName"/>
+
+        <!-- Warns on parameters named $namespace, $object, $default. PHP does
+             not reserve any of these as parameter names, WordPress core uses
+             $namespace itself, and renaming them would make the signatures
+             worse to read, not better. -->
+        <exclude name="Universal.NamingConventions.NoReservedKeywordParameterNames"/>
+    </rule>
+
+    <file>src</file>
+    <arg name="extensions" value="php"/>
+    <arg name="basepath" value="."/>
+    <arg name="colors"/>
+    <arg value="sp"/>
+</ruleset>

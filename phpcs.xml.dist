@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<ruleset name="Wp Signed Tokens">
+    <description>
+        PHP compatibility only.
+
+        This package deliberately uses no WordPress function -- it signs S3
+        requests and nothing more, so it can be used outside WordPress. The
+        WordPress sniffs the sibling packages run would have nothing to say
+        here beyond asking it to become a WordPress package, which is the one
+        thing it is not.
+    </description>
+
+    <file>src</file>
+    <arg name="extensions" value="php"/>
+    <arg name="basepath" value="."/>
+    <arg name="colors"/>
+    <arg value="sp"/>
+
+    <rule ref="PHPCompatibility">
+        <!-- PHPCompatibility 2.x predates PHP 8.1 enums and reads every $this
+             inside an enum method as the PHP 8.0 error about $this in a plain
+             function. Provider and Method are enums throughout, so this fires
+             on around twenty correct lines and finds nothing real. -->
+        <exclude name="PHPCompatibility.Variables.ForbiddenThisUseContexts.OutsideObjectContext"/>
+    </rule>
+    <config name="testVersion" value="8.3-"/>
+
+    <!--
+        No runtime code interpreter, anywhere that ships. It is a construct
+        WordPress security scanners report on sight, and a plugin's vendor
+        directory does get scanned: by WordPress.org on submission, and by
+        security plugins on the live site. The sniff is only a warning by
+        default, and a warning does not fail CI.
+    -->
+    <rule ref="Squiz.PHP.Eval">
+        <type>error</type>
+    </rule>
+
+</ruleset>
